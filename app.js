@@ -6,6 +6,7 @@ $canvas.height = 600
 
 const PLAYER_HEIGHT = 50
 
+let game = null
 let requestId = null
 
 class Player {
@@ -94,6 +95,9 @@ class Game{
         this.player = new Player(PLAYER_HEIGHT, $canvas.height / 2)
 
         this.spaceBetweenColumns = 3
+
+        const bestScore = localStorage.getItem('@bally-bird/score')
+        this.bestScore = bestScore ? bestScore : 0
     }
 
     isPlayerCollidingWith(column){
@@ -104,10 +108,27 @@ class Game{
             this.player.y < column.subY + column.subH &&
             this.player.y + PLAYER_HEIGHT > column.subY)
         ) {
-            window.cancelAnimationFrame(requestId)
+            this.endGame()
             return true
         }
         return false
+    }
+
+    endGame(){
+        window.cancelAnimationFrame(requestId)
+
+        if(this.score > this.bestScore){
+            this.bestScore = this.score
+            localStorage.setItem('@bally-bird/score', this.bestScore)
+        }
+    }
+
+    drawScore(){
+        context.font = "20px Helvetica"
+        context.fillStyle = "#FFF"
+        context.fillText(`Score: ${this.score}`, 50, 20)
+
+        context.fillText(`Best score: ${this.bestScore}`, $canvas.width - 150, 20)
     }
 
     loop(){
@@ -126,13 +147,25 @@ class Game{
             if(column.x < -column.w){
                 column.hasBeenUnrendered = true
                 this.score++
-                console.log(this.score)
             }else{
                 column.draw()
             }
         }
+        this.drawScore() // draw score above all elements
     }
 }
 
-let game = new Game()
-game.loop()
+const startGame = () => {
+    game = new Game()
+    game.loop()
+}
+
+startGame()
+
+document.addEventListener("keydown", (_event) => {
+    if(_event.key.toLowerCase() == "r"){
+        game.endGame()
+        game = new Game()
+        game.loop()
+    }
+})
