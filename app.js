@@ -1,5 +1,6 @@
 const $canvas = document.querySelector(".js-canvas")
 const context = $canvas.getContext('2d')
+const playerImage = document.createElement('img')
 
 $canvas.width = 400
 $canvas.height = 600
@@ -8,6 +9,7 @@ const PLAYER_HEIGHT = 50
 
 let game = null
 let requestId = null
+
 
 class Player {
     constructor(x, y){
@@ -47,14 +49,15 @@ class Player {
 
     draw() {
         this._updatePosition()
-        context.fillStyle = `#F00`
+        // context.fillStyle = `#F00`
         context.shadowBlur = 0
+        context.drawImage(playerImage, this.x, this.y)
 
-        context.beginPath()
-        context.moveTo(this.x, this.y)
-        context.arc(this.x, this.y, 20, 0, Math.PI * 2)
-        context.fill()
-        context.closePath()
+        // context.beginPath()
+        // context.moveTo(this.x, this.y)
+        // context.arc(this.x, this.y, 20, 0, Math.PI * 2)
+        // context.fill()
+        // context.closePath()
     }
 }
 
@@ -96,17 +99,17 @@ class Game{
 
         this.spaceBetweenColumns = 3
 
-        const bestScore = localStorage.getItem('@bally-bird/score')
+        const bestScore = localStorage.getItem('@flappy-fish/score')
         this.bestScore = bestScore ? bestScore : 0
     }
 
     isPlayerCollidingWith(column){
-        if(this.player.x < column.x + column.w - PLAYER_HEIGHT &&
-            this.player.x + PLAYER_HEIGHT > column.x &&
+        if(this.player.x < column.x + column.w - PLAYER_HEIGHT / 1.1 &&
+            this.player.x + PLAYER_HEIGHT / 1.1 > column.x &&
             ((this.player.y < column.h + column.y &&
-            this.player.y + PLAYER_HEIGHT > column.y) || 
-            this.player.y < column.subY + column.subH &&
-            this.player.y + PLAYER_HEIGHT > column.subY)
+            this.player.y + PLAYER_HEIGHT / 1.1 > column.y) || 
+            this.player.y < column.subY + column.subH + 20 &&
+            this.player.y + PLAYER_HEIGHT / 1.1 > column.subY)
         ) {
             this.endGame()
             return true
@@ -119,7 +122,7 @@ class Game{
 
         if(this.score > this.bestScore){
             this.bestScore = this.score
-            localStorage.setItem('@bally-bird/score', this.bestScore)
+            localStorage.setItem('@flappy-fish/score', this.bestScore)
         }
     }
 
@@ -137,14 +140,14 @@ class Game{
 
         this.player.draw()
 
-        for(const column of this.columns.filter($0 => !$0.hasBeenUnrendered)){
+        for(const column of this.columns.filter($0 => !$0.hasBeenUnrendered)){ // iterate into still-visible columns
             this.isPlayerCollidingWith(column)
 
             if(column.x < $canvas.width / this.spaceBetweenColumns && !column.hasGivenItsChild){
                 column.hasGivenItsChild = true
                 this.columns.push(new Column($canvas.width, Math.random() * $canvas.height - 100, Math.random() * 20 + 50))
             }
-            if(column.x < -column.w){
+            if(column.x < -column.w){ // if column is being hidden from canvas, stop rendering it
                 column.hasBeenUnrendered = true
                 this.score++
             }else{
@@ -160,7 +163,12 @@ const startGame = () => {
     game.loop()
 }
 
-startGame()
+
+playerImage.addEventListener("load", () => {
+    startGame()
+})
+
+playerImage.src = "flappyfish.png"
 
 document.addEventListener("keydown", (_event) => {
     if(_event.key.toLowerCase() == "r"){
