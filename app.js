@@ -15,6 +15,7 @@ class Player {
     constructor(x, y){
         this.x = x
         this.y = y
+        this.isDead = false
         this.y_velocity = 4
 
         this._keyboardHandling()
@@ -111,6 +112,7 @@ class Game{
             this.player.y < column.subY + column.subH + 20 &&
             this.player.y + PLAYER_HEIGHT / 1.1 > column.subY)
         ) {
+            this.player.isDead = true
             this.endGame()
             return true
         }
@@ -119,6 +121,12 @@ class Game{
 
     endGame(){
         window.cancelAnimationFrame(requestId)
+
+        context.font = "20px Helvetica"
+        context.fillStyle = "#FFF"
+
+        context.fillText(`GAME OVER`, $canvas.width / 2 - 20, $canvas.height / 2)
+        context.fillText(`Press R to reply`, $canvas.width / 2 - 30, $canvas.height / 2 + 30)
 
         if(this.score > this.bestScore){
             this.bestScore = this.score
