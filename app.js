@@ -5,6 +5,11 @@ const playerImage = document.createElement('img')
 $canvas.width = 400
 $canvas.height = 600
 
+if(window.screen.width < 400 || winndow.screen.height < 600){
+    $canvas.width = window.screen.width
+    $canvas.height = window.screen.height
+}
+
 const PLAYER_HEIGHT = 50
 
 let game = null
@@ -25,7 +30,11 @@ class Player {
         document.addEventListener("keydown", (_event) => {
             // Everytime we press a key, it jumps
 
-            this.y_velocity -= 12
+            this.y_velocity -= 16
+        })
+        
+        document.addEventListener("touchstart", (_event) => {
+            this.y_velocity -= 16
         })
     }
 
@@ -126,7 +135,7 @@ class Game{
         context.fillStyle = "#FFF"
 
         context.fillText(`GAME OVER`, $canvas.width / 2 - 20, $canvas.height / 2)
-        context.fillText(`Press R to reply`, $canvas.width / 2 - 30, $canvas.height / 2 + 30)
+        context.fillText(`Press R to restart`, $canvas.width / 2 - 30, $canvas.height / 2 + 30)
 
         if(this.score > this.bestScore){
             this.bestScore = this.score
@@ -180,6 +189,13 @@ playerImage.src = "flappyfish.png"
 
 document.addEventListener("keydown", (_event) => {
     if(_event.key.toLowerCase() == "r"){
+        game.endGame()
+        game = new Game()
+        game.loop()
+    }
+})
+document.addEventListener("touchstart", (_event) => {
+    if(game.player.isDead){
         game.endGame()
         game = new Game()
         game.loop()
