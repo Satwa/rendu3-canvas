@@ -16,6 +16,5 @@ Made for web development lecture at HETIC (H2) by Joshua Tabakhoff.
 
 - Improve mobile support
 - Setup a better gravity
-- Add a loadscreen instead of auto-starting
 - Change rhythm according to score
 - Add audio

@@ -5,7 +5,7 @@ const playerImage = document.createElement('img')
 $canvas.width = 400
 $canvas.height = 600
 
-if(window.screen.width < 400 || winndow.screen.height < 600){
+if(window.screen.width < 400 || window.screen.height < 600){
     $canvas.width = window.screen.width
     $canvas.height = window.screen.height
 }
@@ -30,11 +30,11 @@ class Player {
         document.addEventListener("keydown", (_event) => {
             // Everytime we press a key, it jumps
 
-            this.y_velocity -= 16
+            this.y_velocity -= 14
         })
         
         document.addEventListener("touchstart", (_event) => {
-            this.y_velocity -= 16
+            this.y_velocity -= 14
         })
     }
 
@@ -42,9 +42,6 @@ class Player {
         this.y += this.y_velocity
         if(this.y_velocity < 0) this.y_velocity++
 
-        // if(this.y_velocity < 0){
-        //     this.y_velocity *= 0.9
-        // }
         if(Math.floor(this.y_velocity) < 1 && Math.floor(this.y_velocity) > -1){
             this.y_velocity += 4
         }
@@ -62,12 +59,6 @@ class Player {
         // context.fillStyle = `#F00`
         context.shadowBlur = 0
         context.drawImage(playerImage, this.x, this.y)
-
-        // context.beginPath()
-        // context.moveTo(this.x, this.y)
-        // context.arc(this.x, this.y, 20, 0, Math.PI * 2)
-        // context.fill()
-        // context.closePath()
     }
 }
 
@@ -175,6 +166,72 @@ class Game{
     }
 }
 
+
+const loadScreen = () => {
+    // requestId = window.requestAnimationFrame(loadScreen)
+    context.clearRect(0, 0, $canvas.width, $canvas.height)
+
+    context.font = "20px Helvetica"
+    context.fillStyle = "#FFF"
+    context.fillText(`FLAPPY FISH`, $canvas.width / 2 - 75, 20)
+    
+    context.font = "12px Helvetica"
+    context.fillStyle = "#FFF"
+    context.fillText(`Press any key to jump`, $canvas.width / 2 - 70, 60)
+    context.fillText(`You can cross up/down border`, $canvas.width / 2 - 90, 80)
+
+    context.fillStyle = "#F00"
+    context.fillRect($canvas.width / 2 - 150, $canvas.height / 2, 300, 100)
+    context.font = "20px Helvetica"
+    context.fillStyle = "#FFF"
+    context.fillText(`START`, $canvas.width / 2 - 32, $canvas.height / 2 + 60)
+
+    window.addEventListener("mousemove", (_event) => {
+        if(game !== null) return
+        const rect = {
+            x: $canvas.width / 2 - 150,
+            y: $canvas.height / 2,
+            width: 300,
+            height: 100
+        }
+        const pos = {
+            x: _event.clientX - $canvas.offsetLeft,
+            y: _event.clientY - $canvas.offsetTop
+        }
+        if(pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y){
+            context.fillStyle = "#3F6"
+        }else{
+            context.fillStyle = "#F00"
+        }
+        context.fillRect($canvas.width / 2 - 150, $canvas.height / 2, 300, 100)
+        context.font = "20px Helvetica"
+        context.fillStyle = "#FFF"
+        context.fillText(`START`, $canvas.width / 2 - 32, $canvas.height / 2 + 60)
+    })
+
+    const _clickStartButton = (_event) => {
+        if(game !== null) return
+        const rect = {
+            x: $canvas.width / 2 - 150,
+            y: $canvas.height / 2,
+            width: 300,
+            height: 100
+        }
+        const pos = {
+            x: _event.clientX - $canvas.offsetLeft,
+            y: _event.clientY - $canvas.offsetTop
+        }
+        if(pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y) {
+            startGame()
+        }
+    }
+
+    window.addEventListener("mousedown", _clickStartButton)
+    window.addEventListener("touchstart", _clickStartButton)
+
+
+}
+
 const startGame = () => {
     game = new Game()
     game.loop()
@@ -182,7 +239,7 @@ const startGame = () => {
 
 
 playerImage.addEventListener("load", () => {
-    startGame()
+    loadScreen()
 })
 
 playerImage.src = "flappyfish.png"
