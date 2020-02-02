@@ -14,7 +14,12 @@ const PLAYER_HEIGHT = 50
 
 let game = null
 let requestId = null
-
+let fps
+let fpsInterval
+let startTime
+let now
+let then
+let elapsed
 
 class Player {
     constructor(x, y){
@@ -98,7 +103,6 @@ class Column{
 
 class Game{
     constructor(){
-        this.elapsed = 0
         this.score = 0
         this.columns = [new Column($canvas.width, 50, 50)]
         this.player = new Player(PLAYER_HEIGHT, $canvas.height / 2)
@@ -149,6 +153,16 @@ class Game{
 
     loop(){
         requestId = window.requestAnimationFrame(this.loop.bind(this))
+
+        now = Date.now()
+        elapsed = now - then
+
+        // source: https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
+        if(elapsed < fpsInterval) {
+            return
+        }
+        then = now - (elapsed % fpsInterval)
+
         context.clearRect(0, 0, $canvas.width, $canvas.height)
 
         this.player.draw()
@@ -238,13 +252,22 @@ const loadScreen = () => {
 }
 
 const startGame = () => {
+    fpsInterval = 1000 / 60
+    then = Date.now()
+    startTime = then
+
     game = new Game()
     game.loop()
 }
 
 
 playerImage.addEventListener("load", () => {
-    loadScreen()
+    if(window.screen.width > 400){
+        loadScreen()
+    } else {
+        game = new Game()
+        game.loop()
+    }
 })
 
 playerImage.src = "flappyfish.png"
