@@ -27,6 +27,11 @@ class Player {
     }
 
     _keyboardHandling(){
+        document.addEventListener("mousedown", (_event) => {
+
+            this.y_velocity -= 14
+        })
+        
         document.addEventListener("keydown", (_event) => {
             // Everytime we press a key, it jumps
 
